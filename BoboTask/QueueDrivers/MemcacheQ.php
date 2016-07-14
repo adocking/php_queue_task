@@ -6,9 +6,8 @@
  * Time: 15:42
  */
 
-namespace adocwang\bbt\drivers;
+namespace Adocwang\Bbt\QueueDrivers;
 
-include_once "MessageQuery.php";
 
 class MemcacheQ implements MessageQuery
 {

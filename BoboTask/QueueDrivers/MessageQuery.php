@@ -5,7 +5,7 @@
  * Date: 7/13/16
  * Time: 15:26
  */
-namespace adocwang\bbt\drivers;
+namespace Adocwang\Bbt\QueueDrivers;
 
 interface MessageQuery
 {

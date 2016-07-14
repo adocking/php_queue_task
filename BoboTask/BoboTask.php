@@ -1,7 +1,7 @@
 <?php
-namespace adocwang\bbt;
+namespace Adocwang\Bbt;
 
-use adocwang\bbt\drivers\MemcacheQ;
+use Adocwang\Bbt\QueueDrivers\MemcacheQ;
 
 class BoboTask
 {
@@ -70,7 +70,7 @@ class BoboTask
         if (empty($this->messageQueueObj)) {
             switch ($this->queue_config_driver) {
                 case 'memcacheq':
-                    include_once "drivers/MemcacheQ.php";
+                    include_once "QueueDrivers/MemcacheQ.php";
                     if (empty($this->queue_config_host) || empty($this->queue_config_port)) {
                         throw new \Exception('no memcache config');
                     }

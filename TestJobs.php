@@ -1,6 +1,6 @@
 <?php
-include("./BoboTask/BoboTask.php");
-use adocwang\bbt\BoboTask;
+include("./vendor/autoload.php");
+use Adocwang\Bbt\BoboTask;
 
 class TestJobs
 {

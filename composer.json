@@ -1,0 +1,21 @@
+{
+  "name": "adocwang/bobotask",
+  "description": "A queue task/async task programing framework for php, and written in php",
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "license": "Apache",
+  "authors": [
+    {
+      "name": "adoc",
+      "email": "yibo520@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Adocwang\\Bbt\\": "BoboTask",
+      "Adocwang\\Bbt\\QueueDrivers\\": "BoboTask/QueueDrivers"
+    }
+  },
+  "minimum-stability": "dev"
+}

@@ -1,1 +1,1 @@
-# php_queue_task
+# A queue task/async task programing framework for php, and written in php
