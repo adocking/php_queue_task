@@ -9,7 +9,7 @@
 namespace Adocwang\Bbt\QueueDrivers;
 
 
-class MemcacheQ implements MessageQuery
+class MemcacheQ implements QueueDriverInterface
 {
     private static $memcacheObj;
 
@@ -19,10 +19,10 @@ class MemcacheQ implements MessageQuery
 
     private $port;
 
-    public function __construct($server, $port)
+    public function __construct($config)
     {
-        $this->server = $server;
-        $this->port = $port;
+        $this->server = $config['host'];
+        $this->port = $config['port'];
         if (empty(self::$memcacheObj)) {
             $this->initMemcached();
         }
@@ -50,12 +50,8 @@ class MemcacheQ implements MessageQuery
      */
     public function pop($key)
     {
-        if (!empty(self::$tempData)) {
-            $data = self::$tempData;
-            self::$tempData = null;
-            return $data;
-        }
-        return $this->getMemcachedObj()->get($key);
+        $res=$this->getMemcachedObj()->get($key);
+        return unserialize($res);
     }
 
     /**
@@ -97,11 +93,9 @@ class MemcacheQ implements MessageQuery
      */
     public function count($key)
     {
-        if (!empty(self::$tempData)) {
-            return 1;
-        }
         self::$tempData = $this->pop($key);
         if (!empty(self::$tempData)) {
+            $this->push($key, (self::$tempData));
             return 1;
         } else {
             return 0;

@@ -7,8 +7,9 @@
  */
 namespace Adocwang\Bbt\QueueDrivers;
 
-interface MessageQuery
+interface QueueDriverInterface
 {
+
     /**
      * get top data of queue
      *
