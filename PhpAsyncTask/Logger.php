@@ -6,10 +6,10 @@
  * Time: 09:42
  */
 
-namespace Adocwang\Bbt;
+namespace Adocwang\Pat;
 
 
-use Adocwang\Bbt\LogDrivers\FileLogger;
+use Adocwang\Pat\LogDrivers\FileLogger;
 
 class Logger
 {

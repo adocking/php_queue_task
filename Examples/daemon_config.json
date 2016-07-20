@@ -1,20 +1,20 @@
 {
   "message_queue": {
-    "driver": "memcacheq",
-    "host": "127.0.0.1",
-    "port": "22201"
+        "driver": "redis",
+        "host": "127.0.0.1",
+        "port": "6379"
   },
   "logger": {
     "driver": "file",
     "log_path": "/tmp/task_log.log"
   },
   "max_memory_usage": 64000000,
-  "php_bin_path":"/usr/local/bin/php",
+  "php_bin_path":"/usr/bin/php",
   "watching_tasks": [
     {
       "task_key": "test_tasks",
       "task_type": "php",
-      "script": "/data/webroot/asyncTask/doJob.php"
+      "script": "/data/webroot/asyncTask/Examples/doJob.php"
     }
   ]
 }

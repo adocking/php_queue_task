@@ -2,18 +2,16 @@
 /**
  * Created by PhpStorm.
  * User: wangyibo
- * Date: 7/13/16
- * Time: 15:42
+ * Date: 7/19/16
+ * Time: 21:58
  */
 
-namespace Adocwang\Bbt\QueueDrivers;
+namespace Adocwang\Pat\QueueDrivers;
 
 
-class MemcacheQ implements QueueDriverInterface
+class Redis implements QueueDriverInterface
 {
-    private static $memcacheObj;
-
-    private static $tempData;
+    private static $redisObj;
 
     private $server;
 
@@ -23,23 +21,23 @@ class MemcacheQ implements QueueDriverInterface
     {
         $this->server = $config['host'];
         $this->port = $config['port'];
-        if (empty(self::$memcacheObj)) {
-            $this->initMemcached();
+        if (empty(self::$redisObj)) {
+            $this->initRedis();
         }
     }
 
-    private function initMemcached()
+    public function initRedis()
     {
-        self::$memcacheObj = new \Memcached();
-        self::$memcacheObj->addServer($this->server, $this->port);
+        self::$redisObj = new \Redis();
+        self::$redisObj->popen($this->server, $this->port);
     }
 
-    private function getMemcachedObj()
+    public function getObj()
     {
-        if (empty(self::$memcacheObj)) {
-            $this->initMemcached();
+        if (empty(self::$redisObj)) {
+            $this->initRedis();
         }
-        return self::$memcacheObj;
+        return self::$redisObj;
     }
 
     /**
@@ -50,7 +48,8 @@ class MemcacheQ implements QueueDriverInterface
      */
     public function pop($key)
     {
-        $res=$this->getMemcachedObj()->get($key);
+        // TODO: Implement pop() method.
+        $res = $this->getObj()->rpop($key);
         return unserialize($res);
     }
 
@@ -62,15 +61,9 @@ class MemcacheQ implements QueueDriverInterface
      */
     public function blPop($key)
     {
-        $loop = false;
-        do {
-            $data = $this->pop($key);
-            if (empty($data)) {
-                $loop = true;
-            }
-        } while ($loop);
-
-        return $data;
+        // TODO: Implement blPop() method.
+        $res = $this->getObj()->brpop($key);
+        return unserialize($res);
     }
 
     /**
@@ -82,7 +75,8 @@ class MemcacheQ implements QueueDriverInterface
      */
     public function push($key, $data)
     {
-        return $this->getMemcachedObj()->set($key, serialize($data));
+        // TODO: Implement push() method.
+        return $this->getObj()->lpush($key, serialize($data));
     }
 
     /**
@@ -93,13 +87,8 @@ class MemcacheQ implements QueueDriverInterface
      */
     public function count($key)
     {
-        self::$tempData = $this->pop($key);
-        if (!empty(self::$tempData)) {
-            $this->push($key, (self::$tempData));
-            return 1;
-        } else {
-            return 0;
-        }
+        // TODO: Implement count() method.
+        return $this->getObj()->lSize($key);
     }
 
     /**
@@ -110,6 +99,7 @@ class MemcacheQ implements QueueDriverInterface
      */
     public function clear($key)
     {
-        $this->getMemcachedObj()->delete($key);
+        // TODO: Implement clear() method.
+        return $this->getObj()->del($key);
     }
 }

@@ -6,5 +6,8 @@
  * Time: 17:00
  */
 include_once "./TestJobs.php";
+//$fd=fopen('/tmp/task_log.log',"a+");
+//fwrite($fd,"asdasd");
+//fclose($fd);
 $job = new TestJobs();
 $job->doJob1();

@@ -6,10 +6,11 @@
  * Time: 09:43
  */
 
-namespace Adocwang\Bbt;
+namespace Adocwang\Pat;
 
 
-use Adocwang\Bbt\QueueDrivers\MemcacheQ;
+use Adocwang\Pat\QueueDrivers\MemcacheQ;
+use Adocwang\Pat\QueueDrivers\Redis;
 
 class Mq
 {
@@ -31,6 +32,12 @@ class Mq
                         throw new \Exception('no memcacheq host or port');
                     }
                     $this->instance = new MemcacheQ($this->config);
+                    break;
+                case 'redis':
+                    if (empty($this->config['host']) || empty($this->config['port'])) {
+                        throw new \Exception('no redis host or port');
+                    }
+                    $this->instance = new Redis($this->config);
                     break;
                 default:
                     throw new \Exception('no queue config driver');

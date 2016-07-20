@@ -5,7 +5,7 @@
  * Date: 7/13/16
  * Time: 15:26
  */
-namespace Adocwang\Bbt\QueueDrivers;
+namespace Adocwang\Pat\QueueDrivers;
 
 interface QueueDriverInterface
 {

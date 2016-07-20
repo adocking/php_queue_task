@@ -6,10 +6,10 @@
  * Time: 17:39
  */
 
-namespace Adocwang\Bbt;
+namespace Adocwang\Pat;
 
 
-class BoboException extends \Exception
+class PhpAsyncTaskException extends \Exception
 {
     public function __construct($message = "", $code = 0, \Exception $previous = null)
     {

@@ -1,8 +1,8 @@
 <?php
-namespace Adocwang\Bbt;
+namespace Adocwang\Pat;
 
 
-class BoboTaskCreator
+class PhpAsyncTaskCreator
 {
     //定义log类型常量
     public static $LOG_TYPE_ERROR = 'e';
@@ -31,6 +31,7 @@ class BoboTaskCreator
         $this->config($config);
         $this->logger = new Logger($this->configArray['logger']);
         $this->mq = new Mq($this->configArray['message_queue']);
+//        $this->writeLog('task_state', 'Creator start', self::$LOG_TYPE_LOG);
     }
 
     public function config($configData, $value = "")

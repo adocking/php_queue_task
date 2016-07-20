@@ -6,15 +6,16 @@
  * Time: 15:27
  */
 
-namespace Adocwang\Bbt;
+namespace Adocwang\Pat;
 
-class BoboTaskScheduler
+class PhpAsyncTaskScheduler
 {
     private $mq;
     private $logger;
-    private $pidFile = '/var/run/bobo_task_scheduler';
+    private $pidFile = '/var/run/php_async_task_scheduler';
     private $configArray = array();
     private $configPath;
+    private $debug = false;
     const sleep = 500000;
 
 
@@ -31,15 +32,15 @@ class BoboTaskScheduler
     public function configParser($path)
     {
         if (!file_exists($path)) {
-            new BoboException('no config file find');
+            new PhpAsyncTaskException('no config file find');
         }
         $content = file_get_contents($path);
         if (empty($content)) {
-            new BoboException('no config file is empty');
+            new PhpAsyncTaskException('no config file is empty');
         } else {
             $configArray = json_decode($content, true);
             if (empty($configArray)) {
-                new BoboException('config is invalid  json');
+                new PhpAsyncTaskException('config is invalid  json');
             } else {
                 return $configArray;
             }
@@ -50,17 +51,12 @@ class BoboTaskScheduler
     {
 
         pcntl_signal(SIGHUP, function ($sigNum) {
-            printf("The process has been reload.\n");
+            printf("The config has been reload.\n");
             Signal::set($sigNum);
         });
 
         pcntl_signal(SIGTERM, function ($sigNum) {
-            printf("The process has been stoped.\n");
-            Signal::set($sigNum);
-        });
-
-        pcntl_signal(SIGKILL, function ($sigNum) {
-            printf("The process has been killed.\n");
+            printf("The scheduler has been stopped.\n");
             Signal::set($sigNum);
         });
 
@@ -77,10 +73,9 @@ class BoboTaskScheduler
         if ($pid == -1) {
             die('could not fork');
         } else if ($pid) {
-            exit($pid);
+            exit();
         } else {
             file_put_contents($this->pidFile, getmypid());
-            return getmypid();
         }
     }
 
@@ -163,18 +158,28 @@ class BoboTaskScheduler
         if (count($taskResult) > 0) {
             return 2;
         }
-        $phpCmd = "/usr/local/bin/php";
-        $cmd = 'nohup ' . $phpCmd . " " . $taskInfo['script'] . ' > /dev/null';// 2>&1 & echo $!';
-        //echo $cmd . "\n";
-        $pid = trim(exec($cmd));
+        $phpCmd = "php";
+        if (!empty($this->configArray['php_bin_path'])) {
+            $phpCmd = $this->configArray['php_bin_path'];
+        }
+        $cmd = 'nohup ' . $phpCmd . " " . $taskInfo['script'] . ' > /dev/null 2>&1 &';
+        if ($this->debug) {
+            $cmd = $phpCmd . " " . $taskInfo['script'];
+            echo $cmd . "\n";
+            $cmdRes = array();
+            $pid = trim(exec($cmd, $cmdRes));
+            echo implode("\n", $cmdRes);
+        } else {
+            $pid = trim(exec($cmd));
+        }
         $this->configArray['watching_tasks'][$taskId]['pid'] = $pid;
         return $pid;
     }
 
     private function start()
     {
+        printf("PhpAsyncTaskScheduler start\n");
         $this->daemon();
-        printf("BoboTaskScheduler start\n");
         $this->run();
     }
 
@@ -192,6 +197,12 @@ class BoboTaskScheduler
                 }
             }
         }
+    }
+
+    private function debug()
+    {
+        $this->debug = true;
+        $this->start();
     }
 
     private function reload()
@@ -215,7 +226,7 @@ class BoboTaskScheduler
             $pid = file_get_contents($this->pidFile);
             posix_kill($pid, SIGKILL);
             unlink($this->pidFile);
-            printf("BoboTaskScheduler stopped\n");
+            printf("PhpAsyncTaskScheduler stopped\n");
         }
     }
 
@@ -237,6 +248,8 @@ class BoboTaskScheduler
             $this->status();
         } else if ($argv[1] === 'reload') {
             $this->reload();
+        } else if ($argv[1] === 'debug') {
+            $this->debug();
         } else {
             $this->help($argv[0]);
         }

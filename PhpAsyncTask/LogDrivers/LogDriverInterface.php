@@ -6,7 +6,7 @@
  * Time: 17:40
  */
 
-namespace Adocwang\Bbt\LogDrivers;
+namespace Adocwang\Pat\LogDrivers;
 
 
 interface LogDriverInterface

@@ -6,7 +6,7 @@
  * Time: 11:53
  */
 
-namespace Adocwang\Bbt;
+namespace Adocwang\Pat;
 
 
 final class Signal

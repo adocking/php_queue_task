@@ -6,7 +6,7 @@
  * Time: 17:42
  */
 
-namespace Adocwang\Bbt\LogDrivers;
+namespace Adocwang\Pat\LogDrivers;
 
 
 class FileLogger implements LogDriverInterface
