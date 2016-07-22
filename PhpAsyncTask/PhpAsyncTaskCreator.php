@@ -71,14 +71,17 @@ class PhpAsyncTaskCreator
         $this->mq->push(serialize($data));
     }
 
-    public function startTask($taskCall)
+    public function startTask($limit=1)
     {
         $this->onStart();
         do {
 //            $this->nowTaskData=$this->popData();
-            if ($this->countQueue() > 0) {
+            $queueCount = $this->countQueue();
+            if ($queueCount > 0) {
                 $this->beforeOneTask();
-                $taskCall();
+                //$taskCall();
+                yield $this->popFromQueue($limit);
+//                yield $this->popFromQueue();
                 $this->checkMemoryOut();
                 $this->afterOneTask();
             } else {
@@ -109,22 +112,31 @@ class PhpAsyncTaskCreator
         return $this->mq->count();
     }
 
-    public function popFromQueue($length = 1)
+    /**
+     * pop data from the queue
+     * @param int $limit the limit of the datas,if $limit=1,return the data,else return an array of datas,default id 1.
+     * @return array|mixed
+     */
+    public function popFromQueue($limit = 1)
     {
         $data = [];
-        if ($length > 1) {
-            for ($i = 0; $i < $length; $i++) {
-                $data[] = unserialize($this->mq->pop());
+        if ($limit > 1) {
+            for ($i = 0; $i < $limit; $i++) {
+                $tmp = $this->mq->pop();
+                if (!empty($tmp)) {
+                    $data[] = $tmp;
+                } else {
+                    break;
+                }
             }
         } else {
-            $data = unserialize($this->mq->pop());
+            $data = $this->mq->pop();
         }
         $this->nowTaskData = $data;
         return $data;
     }
 
-    public
-    function stopTask()
+    public function stopTask()
     {
         $this->onStop();
         exit();

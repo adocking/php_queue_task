@@ -5,6 +5,11 @@ use Adocwang\Pat\PhpAsyncTaskCreator;
 
 class TestJobs
 {
+    public function testJobFunc()
+    {
+        return "this is a function in testJob";
+    }
+
     /**
      * 添加一些测试任务,以及任务数据
      */
@@ -17,7 +22,7 @@ class TestJobs
     }
 
     /**
-     * 设置执行任务要做的事,通过回调的方式
+     * 设置执行任务要做的事,通过迭代yield返回的生成器
      *
      *
      */
@@ -25,9 +30,12 @@ class TestJobs
     {
         $taskClient = new PhpAsyncTaskCreator(TestJobConfig::get());
         $taskClient->writeLog('test', 'log test');
-        $taskClient->startTask(function () use ($taskClient) {
-            $data = $taskClient->popFromQueue();
+        $controller = $this;
+//        var_dump($taskClient->startTask() instanceof Iterator);
+//        exit();
+        foreach ($taskClient->startTask(2) as $data) {
             $taskClient->writeLog('in_job', serialize($data), PhpAsyncTaskCreator::$LOG_TYPE_LOG);
-        });
+            $taskClient->writeLog('in_job', $controller->testJobFunc(), PhpAsyncTaskCreator::$LOG_TYPE_LOG);
+        }
     }
 }
