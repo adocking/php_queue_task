@@ -10,6 +10,7 @@ namespace Adocwang\Pat;
 
 
 use Adocwang\Pat\QueueDrivers\MemcacheQ;
+use Adocwang\Pat\QueueDrivers\Mysql;
 use Adocwang\Pat\QueueDrivers\Redis;
 
 class Mq
@@ -38,6 +39,15 @@ class Mq
                         throw new \Exception('no redis host or port');
                     }
                     $this->instance = new Redis($this->config);
+                    break;
+                case 'mysql':
+                    $configCheckKeys=array('host','user','db');
+                    foreach($configCheckKeys as $configCheckKey){
+                        if (empty($this->config[$configCheckKey])){
+                            throw new \Exception('no mysql '.$configCheckKey);
+                        }
+                    }
+                    $this->instance = new Mysql($this->config);
                     break;
                 default:
                     throw new \Exception('no queue config driver');

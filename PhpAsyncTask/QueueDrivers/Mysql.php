@@ -25,6 +25,7 @@ class Mysql implements QueueDriverInterface
     public function __construct($config)
     {
         $this->server = $config['host'];
+//        print_r($config);
         if (!empty($config['port'])) {
             $this->port = $config['port'];
         }
@@ -38,9 +39,10 @@ class Mysql implements QueueDriverInterface
 
     public function initConnection()
     {
-        self::$connectionInstance = new PDO("mysql:host=" . $this->server . ";dbname=" . $this->dbName, $this->user, $this->password);
+        self::$connectionInstance = new PDO("mysql:host=" . $this->server . ";dbname=" . $this->dbName, $this->user, $this->password, array(PDO::ATTR_PERSISTENT => true));
         $tableExistsSql = 'SHOW TABLES LIKE \'php_async_task_queue\';';
         $existNum = self::$connectionInstance->query($tableExistsSql)->rowCount();
+//        print_r($existNum);
         if ($existNum != 1) {
             $createTableSql = <<<EOF
 CREATE TABLE `php_async_task_queue` (
@@ -78,6 +80,7 @@ EOF;
     {
         //TODO need transaction here
         $sql = "SELECT `id`,`task_key`,`value` FROM `php_async_task_queue` WHERE `task_key`='" . $key . "' ORDER BY `id` ASC LIMIT 1";
+//        echo $sql;
         $row = $this->getConnectionInstance()->query($sql)->fetch(PDO::FETCH_ASSOC);
         if (!empty($row['value'])) {
             $deleteSql = "DELETE FROM `php_async_task_queue` WHERE `id`='" . $row['id'] . "';";
@@ -120,8 +123,10 @@ EOF;
      */
     public function count($key)
     {
-        $sql = "SELECT COUNT(*) AS `count` FROM `php_async_task_queue` WHERE `task_key` = '" . $key . "'";
+        $sql = "SELECT COUNT(*) AS `count` FROM `php_async_task_queue` WHERE `task_key` = '" . $key . "';";
+//        echo $sql;
         $row = $this->getConnectionInstance()->query($sql)->fetch(PDO::FETCH_ASSOC);
+//        print_r($this->getConnectionInstance()->errorInfo());
         if (!empty($row['count'])) {
             return $row['count'];
         }

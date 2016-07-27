@@ -15,6 +15,7 @@ class Logger
 {
     private $instance;
     private $config;
+    private $needEcho = false;
 
     public function __construct($config)
     {
@@ -37,13 +38,15 @@ class Logger
         return $this->instance;
     }
 
-    public function writeLog($tag, $data, $type = "l")
+    public function writeLog($tag, $data, $type = "L")
     {
         if (empty($tag) || empty($data)) {
             return false;
         }
-        $logText = date('Y-m-d H:i:s') . " " . $type . " " . $tag . " " . $data . " " . "\n";
-        echo $logText;
+        $logText = date('Y-m-d H:i:s') . " " . strtoupper($type) . " [" . $tag . "] " . $data . " " . "\n";
+        if ($this->needEcho) {
+            echo $logText;
+        }
         return $this->getInstance()->write($logText);
     }
 }

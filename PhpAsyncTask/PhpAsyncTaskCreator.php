@@ -26,8 +26,13 @@ class PhpAsyncTaskCreator
     //当前task的data
     public $nowTaskData;
 
-    public function __construct($config)
+    public function __construct($config, $taskKey)
     {
+        if (!empty($taskKey)) {
+            $config['task_key'] = $taskKey;
+        }else{
+            throw new \Exception('TaskKey is empty');
+        }
         $this->config($config);
         $this->logger = new Logger($this->configArray['logger']);
         $this->mq = new Mq($this->configArray['message_queue']);
@@ -71,7 +76,7 @@ class PhpAsyncTaskCreator
         $this->mq->push(serialize($data));
     }
 
-    public function startTask($limit=1)
+    public function startTask($limit = 1)
     {
         $this->onStart();
         do {

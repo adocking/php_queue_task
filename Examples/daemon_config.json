@@ -1,15 +1,17 @@
 {
   "message_queue": {
-        "driver": "redis",
-        "host": "127.0.0.1",
-        "port": "6379"
+    "driver": "mysql",
+    "host": "127.0.0.1",
+    "user": "root",
+    "password": "root",
+    "db":"test"
   },
   "logger": {
     "driver": "file",
     "log_path": "/tmp/task_log.log"
   },
   "max_memory_usage": 64000000,
-  "php_bin_path":"/usr/bin/php",
+  "php_bin_path": "/usr/bin/php",
   "watching_tasks": [
     {
       "task_key": "test_tasks",

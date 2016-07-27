@@ -24,8 +24,8 @@ class PhpAsyncTaskScheduler
         $this->setSignals();
         $this->configPath = $configPath;
         $this->config($this->configParser($this->configPath));
-        $this->mq = new Mq($this->configArray['message_queue']);
-        $this->logger = new Logger($this->configArray['logger']);
+//        $this->mq = new Mq($this->configArray['message_queue']);
+//        $this->logger = new Logger($this->configArray['logger']);
 //        $this->signal();
     }
 
@@ -68,7 +68,6 @@ class PhpAsyncTaskScheduler
             echo "The pid file $this->pidFile exists.\n";
             exit();
         }
-        $this->initResources();
         $pid = pcntl_fork();
         if ($pid == -1) {
             die('could not fork');
@@ -76,6 +75,7 @@ class PhpAsyncTaskScheduler
             exit();
         } else {
             file_put_contents($this->pidFile, getmypid());
+            $this->initResources();
         }
     }
 
@@ -140,6 +140,7 @@ class PhpAsyncTaskScheduler
                     continue;
                 }
                 if ($this->mq->count($watchingTask['task_key']) > 0) {
+                    $this->logger->writeLog('daemon',$watchingTask['task_key']." have been trigger");
                     $this->runCommand($taskId);
                 }
                 //echo ' watch ' . $watchingTask['task_key'] . "|";
@@ -215,9 +216,14 @@ class PhpAsyncTaskScheduler
 //        $this->start();
     }
 
+    private function restart(){
+        $this->stop();
+        $this->start();
+    }
+
     private function help($proc)
     {
-        printf("%s start | stop | restart | status | foreground | help \n", $proc);
+        printf("%s start | stop | reload |  restart | status | foreground | help \n", $proc);
     }
 
     private function stop()
@@ -248,6 +254,8 @@ class PhpAsyncTaskScheduler
             $this->status();
         } else if ($argv[1] === 'reload') {
             $this->reload();
+        } else if ($argv[1] === 'restart') {
+            $this->restart();
         } else if ($argv[1] === 'debug') {
             $this->debug();
         } else {

@@ -1,6 +1,6 @@
 <?php
-include_once("../vendor/autoload.php");
-include_once("./test_job_config.php");
+include_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . "vendor/autoload.php";
+include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . "test_job_config.php";
 use Adocwang\Pat\PhpAsyncTaskCreator;
 
 class TestJobs
@@ -15,7 +15,7 @@ class TestJobs
      */
     public function addJob()
     {
-        $taskClient = new PhpAsyncTaskCreator(TestJobConfig::get());
+        $taskClient = new PhpAsyncTaskCreator(TestJobConfig::get(), 'test_tasks');
         for ($i = 0; $i < 10; $i++) {
             $taskClient->pushToQueue(array('job_id' => $i));
         }
@@ -28,7 +28,7 @@ class TestJobs
      */
     public function doJob1()
     {
-        $taskClient = new PhpAsyncTaskCreator(TestJobConfig::get());
+        $taskClient = new PhpAsyncTaskCreator(TestJobConfig::get(), 'test_tasks');
         $taskClient->writeLog('test', 'log test');
         $controller = $this;
 //        var_dump($taskClient->startTask() instanceof Iterator);
