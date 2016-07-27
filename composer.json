@@ -6,7 +6,7 @@
   },
   "license": "Apache",
   "keywords":["message queue"],
-  "version":"0.1.0",
+  "version":"0.1.1",
   "authors": [
     {
       "name": "adoc",
