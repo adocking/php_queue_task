@@ -30,12 +30,11 @@ class TestJobs
     {
         $taskClient = new PhpAsyncTaskCreator(TestJobConfig::get(), 'test_tasks');
         $taskClient->writeLog('test', 'log test');
-        $controller = $this;
 //        var_dump($taskClient->startTask() instanceof Iterator);
 //        exit();
         foreach ($taskClient->startTask(2) as $data) {
             $taskClient->writeLog('in_job', serialize($data), PhpAsyncTaskCreator::$LOG_TYPE_LOG);
-            $taskClient->writeLog('in_job', $controller->testJobFunc(), PhpAsyncTaskCreator::$LOG_TYPE_LOG);
+            $taskClient->writeLog('in_job', $this->testJobFunc(), PhpAsyncTaskCreator::$LOG_TYPE_LOG);
         }
     }
 }

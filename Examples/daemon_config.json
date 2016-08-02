@@ -17,6 +17,11 @@
       "task_key": "test_tasks",
       "task_type": "php",
       "script": "/data/webroot/asyncTask/Examples/doJob.php"
+    },
+    {
+      "task_key": "jpush_push_to_alias",
+      "task_type": "php",
+      "script": "/data/webroot/51yrz/php/index.php Tools/Notification/asyncJPushAlias"
     }
   ]
 }

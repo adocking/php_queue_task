@@ -10,6 +10,7 @@ namespace Adocwang\Pat;
 
 
 use Adocwang\Pat\QueueDrivers\MemcacheQ;
+use Adocwang\Pat\QueueDrivers\MQException;
 use Adocwang\Pat\QueueDrivers\Mysql;
 use Adocwang\Pat\QueueDrivers\Redis;
 
@@ -47,7 +48,11 @@ class Mq
                             throw new \Exception('no mysql '.$configCheckKey);
                         }
                     }
-                    $this->instance = new Mysql($this->config);
+                    try {
+                        $this->instance = new Mysql($this->config);
+                    }catch (MQException $e){
+                        throw $e;
+                    }
                     break;
                 default:
                     throw new \Exception('no queue config driver');

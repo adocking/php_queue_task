@@ -8,6 +8,8 @@
 
 namespace Adocwang\Pat;
 
+use Adocwang\Pat\QueueDrivers\MQException;
+
 class PhpAsyncTaskScheduler
 {
     private $mq;
@@ -81,8 +83,13 @@ class PhpAsyncTaskScheduler
 
     private function initResources()
     {
-        $this->mq = new Mq($this->configArray['message_queue']);
         $this->logger = new Logger($this->configArray['logger']);
+        try {
+            $this->mq = new Mq($this->configArray['message_queue']);
+        }catch (MQException $e){
+            //$this->logger->writeLog("error",$e->getMessage(),"E");
+            $this->stop();
+        }
     }
 
     public function config($configData, $value = "")

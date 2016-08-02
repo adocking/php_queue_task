@@ -39,12 +39,13 @@ class Mysql implements QueueDriverInterface
 
     public function initConnection()
     {
-        self::$connectionInstance = new PDO("mysql:host=" . $this->server . ";dbname=" . $this->dbName, $this->user, $this->password, array(PDO::ATTR_PERSISTENT => true));
-        $tableExistsSql = 'SHOW TABLES LIKE \'php_async_task_queue\';';
-        $existNum = self::$connectionInstance->query($tableExistsSql)->rowCount();
+        try {
+            self::$connectionInstance = new PDO("mysql:host=" . $this->server . ";dbname=" . $this->dbName, $this->user, $this->password, array(PDO::ATTR_PERSISTENT => true));
+            $tableExistsSql = 'SHOW TABLES LIKE \'php_async_task_queue\';';
+            $existNum = self::$connectionInstance->query($tableExistsSql)->rowCount();
 //        print_r($existNum);
-        if ($existNum != 1) {
-            $createTableSql = <<<EOF
+            if ($existNum != 1) {
+                $createTableSql = <<<EOF
 CREATE TABLE `php_async_task_queue` (
   `id` int(11) NOT NULL,
   `task_key` varchar(63) NOT NULL,
@@ -58,7 +59,10 @@ ALTER TABLE `php_async_task_queue`
 ALTER TABLE `php_async_task_queue`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 EOF;
-            self::$connectionInstance->query($createTableSql);
+                self::$connectionInstance->query($createTableSql);
+            }
+        } catch (\PDOException $e) {
+            throw new MQException($e->getMessage());
         }
     }
 

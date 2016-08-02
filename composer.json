@@ -15,8 +15,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Adocwang\\Pat\\": "PhpAsyncTask",
-      "Adocwang\\Pat\\QueueDrivers\\": "PhpAsyncTask/QueueDrivers"
+      "Adocwang\\Pat\\": "PhpAsyncTask"
     }
   },
   "minimum-stability": "dev"
