@@ -21,7 +21,7 @@
     {
       "task_key": "jpush_push_to_alias",
       "task_type": "php",
-      "script": "/data/webroot/51yrz/php/index.php Tools/Notification/asyncJPushAlias"
+      "script": "/data/webroot/51yrz/php/index.php Tools/AsyncTask/asyncJPushMessage"
     }
   ]
 }

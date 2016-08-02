@@ -73,7 +73,7 @@ class PhpAsyncTaskCreator
 
     public function pushToQueue($data)
     {
-        $this->mq->push($data);
+        return $this->mq->push($data);
     }
 
     public function startTask($limit = 1)
