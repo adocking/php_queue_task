@@ -22,10 +22,9 @@ class Task
     {
         $this->id = uniqid('', true);
         $this->createdTime = date('Y-m-d H:i:s');
-        if ($this->executionTime == "") {
-            $this->executionTime = date('Y-m-d H:i:s');
+        if (!empty($this->executionTime)) {
+            $this->executionTimestamp = strtotime($this->executionTime);
         }
-        $this->executionTimestamp = strtotime($this->executionTime);
         if ($this->delay > 0) {
             $this->executionTimestamp += $this->delay;
         }
