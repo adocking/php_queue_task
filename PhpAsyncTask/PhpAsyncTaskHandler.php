@@ -2,7 +2,7 @@
 namespace Adocwang\Pat;
 
 
-class PhpAsyncTaskCreator
+class PhpAsyncTaskHandler
 {
     //定义log类型常量
     public static $LOG_TYPE_ERROR = 'e';
@@ -141,7 +141,7 @@ class PhpAsyncTaskCreator
                     $loop = false;
                 }
                 if ($tmpTask->executionTime < $time) {
-                    $data[] = $tmpTask;
+                    $data[] = $tmpTask->data;
                     if (count($data) >= $limit) {
                         $loop = false;
                     }
