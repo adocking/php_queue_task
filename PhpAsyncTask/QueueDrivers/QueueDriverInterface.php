@@ -31,10 +31,10 @@ interface QueueDriverInterface
      * put data to the bottom of queue
      *
      * @param $key string name of queue
-     * @param $data mixed
+     * @param $data string
      * @return boolean
      */
-    public function push($key,$data);
+    public function push(string $key, string $data);
 
     /**
      * count queue's length
@@ -51,4 +51,12 @@ interface QueueDriverInterface
      * @return boolean
      */
     public function clear($key);
+
+    /**
+     * revert last message to queue
+     *
+     * @param $key string name of queue
+     * @return boolean
+     */
+    public function revert($key);
 }

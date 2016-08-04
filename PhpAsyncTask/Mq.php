@@ -42,15 +42,15 @@ class Mq
                     $this->instance = new Redis($this->config);
                     break;
                 case 'mysql':
-                    $configCheckKeys=array('host','user','db');
-                    foreach($configCheckKeys as $configCheckKey){
-                        if (empty($this->config[$configCheckKey])){
-                            throw new \Exception('no mysql '.$configCheckKey);
+                    $configCheckKeys = array('host', 'user', 'db');
+                    foreach ($configCheckKeys as $configCheckKey) {
+                        if (empty($this->config[$configCheckKey])) {
+                            throw new \Exception('no mysql ' . $configCheckKey);
                         }
                     }
                     try {
                         $this->instance = new Mysql($this->config);
-                    }catch (MQException $e){
+                    } catch (MQException $e) {
                         throw $e;
                     }
                     break;
@@ -67,15 +67,15 @@ class Mq
         if (!empty($task_key)) {
             $this->config['task_key'] = $task_key;
         }
-        return $this->getInstance()->pop($this->config['task_key']);
+        return unserialize($this->getInstance()->pop($this->config['task_key']));
     }
 
-    public function push($data, $task_key = "")
+    public function push(Task $task, $task_key = "")
     {
         if (!empty($task_key)) {
             $this->config['task_key'] = $task_key;
         }
-        return $this->getInstance()->push($this->config['task_key'], $data);
+        return $this->getInstance()->push($this->config['task_key'], serialize($task));
     }
 
     public function count($task_key = "")

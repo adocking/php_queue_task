@@ -21,6 +21,7 @@ class Mysql implements QueueDriverInterface
     private $user;
     private $password;
     private $dbName;
+    private $lastData = array();
 
     public function __construct($config)
     {
@@ -86,12 +87,19 @@ EOF;
         $sql = "SELECT `id`,`task_key`,`value` FROM `php_async_task_queue` WHERE `task_key`='" . $key . "' ORDER BY `id` ASC LIMIT 1";
 //        echo $sql;
         $row = $this->getConnectionInstance()->query($sql)->fetch(PDO::FETCH_ASSOC);
+        $data = null;
         if (!empty($row['value'])) {
-            $deleteSql = "DELETE FROM `php_async_task_queue` WHERE `id`='" . $row['id'] . "';";
-            $this->getConnectionInstance()->query($deleteSql);
-            return unserialize($row['value']);
+            $this->deleteRow($row['id']);
+            $data = $row['value'];
         }
-        return null;
+        $this->lastData[$key] = $data;
+        return $data;
+    }
+
+    private function deleteRow($id)
+    {
+        $deleteSql = "DELETE FROM `php_async_task_queue` WHERE `id`='" . $id . "';";
+        $this->getConnectionInstance()->query($deleteSql);
     }
 
     /**
@@ -109,12 +117,12 @@ EOF;
      * put data to the bottom of queue
      *
      * @param $key string name of queue
-     * @param $data mixed
+     * @param $data string
      * @return boolean
      */
-    public function push($key, $data)
+    public function push(string $key, string $data)
     {
-        $sql = "INSERT INTO `php_async_task_queue` (`task_key`,`value`) VALUES('" . addslashes($key) . "', '" . addslashes(serialize($data)) . "')";
+        $sql = "INSERT INTO `php_async_task_queue` (`task_key`,`value`) VALUES('" . addslashes($key) . "', '" . addslashes($data) . "')";
         $this->getConnectionInstance()->query($sql);
         return $this->getConnectionInstance()->lastinsertid();
     }
@@ -148,5 +156,16 @@ EOF;
         $sql = "DELETE FROM `php_async_task_queue` WHERE `task_key`='" . $key . "'";
         $this->getConnectionInstance()->query($sql);
         return true;
+    }
+
+    public function revert($key)
+    {
+        $result = false;
+        if (!empty($this->lastData[$key])) {
+            $sql = "INSERT INTO `php_async_task_queue` (`id`,`task_key`,`value`) VALUES('". $this->lastData[$key]['id']."','" . addslashes($this->lastData[$key]['task_key']) . "', '" . addslashes($this->lastData[$key]['value']) . "')";
+            $result = $this->getConnectionInstance()->query($sql);
+            unset($this->lastData[$key]);
+        }
+        return $result;
     }
 }

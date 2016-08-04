@@ -19,6 +19,8 @@ class MemcacheQ implements QueueDriverInterface
 
     private $port;
 
+    public $lastData = array();
+
     public function __construct($config)
     {
         $this->server = $config['host'];
@@ -50,8 +52,8 @@ class MemcacheQ implements QueueDriverInterface
      */
     public function pop($key)
     {
-        $res=$this->getMemcachedObj()->get($key);
-        return unserialize($res);
+        $res = $this->getMemcachedObj()->get($key);
+        return $res;
     }
 
     /**
@@ -77,12 +79,12 @@ class MemcacheQ implements QueueDriverInterface
      * put data to the bottom of queue
      *
      * @param $key string name of queue
-     * @param $data mixed
+     * @param $data string
      * @return boolean
      */
-    public function push($key, $data)
+    public function push(string $key, string $data)
     {
-        return $this->getMemcachedObj()->set($key, serialize($data));
+        return $this->getMemcachedObj()->set($key, $data);
     }
 
     /**
@@ -111,5 +113,15 @@ class MemcacheQ implements QueueDriverInterface
     public function clear($key)
     {
         $this->getMemcachedObj()->delete($key);
+    }
+
+    public function  revert($key)
+    {
+        $res = false;
+        if (!empty($this->lastData[$key])) {
+            $res = $this->getMemcachedObj()->set($key, $this->lastData[$key]);
+            unset($this->lastData[$key]);
+        }
+        return $res;
     }
 }

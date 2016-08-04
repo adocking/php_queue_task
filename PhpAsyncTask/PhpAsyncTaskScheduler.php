@@ -76,7 +76,10 @@ class PhpAsyncTaskScheduler
         } else if ($pid) {
             exit();
         } else {
-            file_put_contents($this->pidFile, getmypid());
+            $res = file_put_contents($this->pidFile, getmypid());
+            if (!$res) {
+                throw new PhpAsyncTaskException('can not write pid file.');
+            }
             $this->initResources();
         }
     }
@@ -86,7 +89,7 @@ class PhpAsyncTaskScheduler
         $this->logger = new Logger($this->configArray['logger']);
         try {
             $this->mq = new Mq($this->configArray['message_queue']);
-        }catch (MQException $e){
+        } catch (MQException $e) {
             //$this->logger->writeLog("error",$e->getMessage(),"E");
             $this->stop();
         }
@@ -147,7 +150,7 @@ class PhpAsyncTaskScheduler
                     continue;
                 }
                 if ($this->mq->count($watchingTask['task_key']) > 0) {
-                    $this->logger->writeLog('daemon',$watchingTask['task_key']." have been trigger");
+                    $this->logger->writeLog('daemon', $watchingTask['task_key'] . " have been trigger");
                     $this->runCommand($taskId);
                 }
                 //echo ' watch ' . $watchingTask['task_key'] . "|";
@@ -223,7 +226,8 @@ class PhpAsyncTaskScheduler
 //        $this->start();
     }
 
-    private function restart(){
+    private function restart()
+    {
         $this->stop();
         $this->start();
     }

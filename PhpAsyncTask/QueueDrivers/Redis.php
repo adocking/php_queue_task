@@ -17,6 +17,8 @@ class Redis implements QueueDriverInterface
 
     private $port;
 
+    private $lastData = array();
+
     public function __construct($config)
     {
         $this->server = $config['host'];
@@ -50,7 +52,8 @@ class Redis implements QueueDriverInterface
     {
         // TODO: Implement pop() method.
         $res = $this->getObj()->rpop($key);
-        return unserialize($res);
+        $lastData[$key] = $res;
+        return $res;
     }
 
     /**
@@ -63,17 +66,18 @@ class Redis implements QueueDriverInterface
     {
         // TODO: Implement blPop() method.
         $res = $this->getObj()->brpop($key);
-        return unserialize($res);
+        $lastData[$key] = $res;
+        return $res;
     }
 
     /**
      * put data to the bottom of queue
      *
      * @param $key string name of queue
-     * @param $data mixed
+     * @param $data string
      * @return boolean
      */
-    public function push($key, $data)
+    public function push(string $key, string $data)
     {
         // TODO: Implement push() method.
         return $this->getObj()->lpush($key, serialize($data));
@@ -87,7 +91,6 @@ class Redis implements QueueDriverInterface
      */
     public function count($key)
     {
-        // TODO: Implement count() method.
         return $this->getObj()->lSize($key);
     }
 
@@ -99,7 +102,16 @@ class Redis implements QueueDriverInterface
      */
     public function clear($key)
     {
-        // TODO: Implement clear() method.
         return $this->getObj()->del($key);
+    }
+
+    public function revert($key)
+    {
+        $res = false;
+        if (!empty($this->lastData[$key])) {
+            $res = $this->getObj()->rpush($key, $this->lastData[$key]);
+            unset($this->lastData[$key]);
+        }
+        return $res;
     }
 }
