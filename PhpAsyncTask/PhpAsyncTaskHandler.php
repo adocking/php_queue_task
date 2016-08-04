@@ -140,7 +140,7 @@ class PhpAsyncTaskHandler
                 } else {
                     $loop = false;
                 }
-                if ($tmpTask->executionTime < $time) {
+                if ($tmpTask->executionTimestamp < $time) {
                     $data[] = $tmpTask->data;
                     if (count($data) >= $limit) {
                         $loop = false;
