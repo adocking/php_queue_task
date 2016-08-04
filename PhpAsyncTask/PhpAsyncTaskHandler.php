@@ -85,7 +85,12 @@ class PhpAsyncTaskHandler
             if ($queueCount > 0) {
                 $this->beforeOneTask();
                 //$taskCall();
-                yield $this->popFromQueue($limit);
+                $data = $this->popFromQueue($limit);
+                if (!empty($data)) {
+                    yield $data;
+                }else{
+                    break;
+                }
 //                yield $this->popFromQueue();
                 $this->checkMemoryOut();
                 $this->afterOneTask();
@@ -132,15 +137,20 @@ class PhpAsyncTaskHandler
         $ids = array();
         //get data in loop
         do {
-            $loop = false;
+            $loop = true;
             $tmpTask = $this->mq->pop();
-            if (!empty($tmpTask) || $tmpTask instanceof Task) {
-                if (!in_array($tmpTask->id, $ids)) {
-                    $ids[] = $tmpTask;
+            if (!empty($tmpTask) && $tmpTask instanceof Task) {
+                if (!isset($ids[($tmpTask->id)])) {
+                    $ids[($tmpTask->id)] = true;
                 } else {
                     $loop = false;
                 }
-                if ($tmpTask->executionTimestamp < $time) {
+//                var_dump($ids);
+//                echo($tmpTask->executionTimestamp."|".$time);
+//                var_dump($tmpTask->executionTimestamp<=$time);
+//                $this->mq->push($tmpTask);
+//                exit;
+                if ($tmpTask->executionTimestamp <= $time) {
                     $data[] = $tmpTask->data;
                     if (count($data) >= $limit) {
                         $loop = false;
