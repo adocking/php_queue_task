@@ -20,8 +20,12 @@ class Task
 
     function __sleep()
     {
-        $this->id = uniqid('', true);
-        $this->createdTime = date('Y-m-d H:i:s');
+        if (empty($this->id)) {
+            $this->id = uniqid('', true);
+        }
+        if (empty($this->createdTime)) {
+            $this->createdTime = date('Y-m-d H:i:s');
+        }
         if (!empty($this->executionTime)) {
             $this->executionTimestamp = strtotime($this->executionTime);
         }
