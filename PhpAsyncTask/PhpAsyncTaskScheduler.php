@@ -34,15 +34,15 @@ class PhpAsyncTaskScheduler
     public function configParser($path)
     {
         if (!file_exists($path)) {
-            new PhpAsyncTaskException('no config file find');
+            throw new PhpAsyncTaskException('no config file find');
         }
         $content = file_get_contents($path);
         if (empty($content)) {
-            new PhpAsyncTaskException('no config file is empty');
+            throw new PhpAsyncTaskException('no config file is empty');
         } else {
             $configArray = json_decode($content, true);
             if (empty($configArray)) {
-                new PhpAsyncTaskException('config is invalid  json');
+                throw new PhpAsyncTaskException('config is invalid  json');
             } else {
                 return $configArray;
             }
