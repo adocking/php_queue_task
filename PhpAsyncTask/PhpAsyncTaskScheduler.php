@@ -25,35 +25,32 @@ class PhpAsyncTaskScheduler
     {
         $this->setSignals();
         $this->configPath = $configPath;
-        $this->config($this->configParser($this->configPath));
-//        $this->mq = new Mq($this->configArray['message_queue']);
-//        $this->logger = new Logger($this->configArray['logger']);
-//        $this->signal();
     }
 
     public function configParser($path)
     {
         if (!file_exists($path)) {
-            throw new PhpAsyncTaskException('no config file find');
+            printf("no config file find.\n");
         }
         $content = file_get_contents($path);
         if (empty($content)) {
-            throw new PhpAsyncTaskException('no config file is empty');
+            printf("config file is empty\n");
         } else {
             $configArray = json_decode($content, true);
             if (empty($configArray)) {
-                throw new PhpAsyncTaskException('config is invalid  json');
+                printf("config is invalid  json\n");
             } else {
+                printf("Config file " . $path . " has been load.\n");
                 return $configArray;
             }
         }
+        return array();
     }
 
     public function setSignals()
     {
 
         pcntl_signal(SIGHUP, function ($sigNum) {
-            printf("The config has been reload.\n");
             Signal::set($sigNum);
         });
 
@@ -142,7 +139,11 @@ class PhpAsyncTaskScheduler
         while ($looping) {
             pcntl_signal_dispatch();
             if (Signal::get() == SIGHUP) {
-                $this->config($this->configParser($this->configPath));
+                $conf = $this->configParser($this->configPath);
+                if (!empty($conf)) {
+                    $this->config($conf);
+                }
+                echo "press enter to continue!";
                 Signal::set(0);
             }
             foreach ($this->configArray['watching_tasks'] as $taskId => $watchingTask) {
@@ -189,6 +190,7 @@ class PhpAsyncTaskScheduler
 
     private function start()
     {
+        $this->config($this->configParser($this->configPath));
         printf("PhpAsyncTaskScheduler start\n");
         $this->daemon();
         $this->run();
