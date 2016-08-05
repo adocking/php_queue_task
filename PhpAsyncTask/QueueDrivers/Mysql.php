@@ -51,7 +51,7 @@ CREATE TABLE `php_async_task_queue` (
   `id` int(11) NOT NULL,
   `task_key` varchar(63) NOT NULL,
   `value` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `php_async_task_queue`
   ADD PRIMARY KEY (`id`),

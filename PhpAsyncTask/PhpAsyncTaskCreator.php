@@ -118,6 +118,6 @@ class PhpAsyncTaskCreator
         $task->delay = $this->taskArgs['delay'];
         $task->executionTime = $this->taskArgs['executionTime'];
         $task->data = $this->taskArgs['data'];
-        $this->pushToQueue($task);
+        return $this->pushToQueue($task);
     }
 }

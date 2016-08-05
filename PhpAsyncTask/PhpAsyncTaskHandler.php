@@ -144,6 +144,7 @@ class PhpAsyncTaskHandler
                     $ids[($tmpTask->id)] = true;
                 } else {
                     $loop = false;
+                    sleep(5);
                 }
 //                var_dump($ids);
 //                echo($tmpTask->executionTimestamp."|".$time);
